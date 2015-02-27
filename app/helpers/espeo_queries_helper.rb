@@ -39,7 +39,7 @@ module EspeoQueriesHelper
   end
 
   def espeo_column_value(column, entry, value)
-    return send(column.column_value_helper, value) if column.column_value_helper
+    return send(helper_method, value) if column.respond_to?(:column_value_helper) && helper_method == column.column_value_helper
 
     case column.name
     when :id
