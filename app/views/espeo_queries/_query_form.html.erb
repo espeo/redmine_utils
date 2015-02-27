@@ -1,0 +1,29 @@
+<%= form_tag(nil, :method => :get, :id => 'query_form') do %>
+  <div id="query_form_with_buttons" class="hide-when-print">
+    <%= hidden_field_tag 'set_filter', '1' %>
+    <div id="query_form_content">
+      <fieldset id="filters" class="collapsible <%= collection.query.new_record? ? "" : "collapsed" %>">
+        <legend onclick="toggleFieldset(this);"><%= l(:label_filter_plural) %></legend>
+        <div style="<%= collection.query.new_record? ? "" : "display: none;" %>">
+          <%= render :partial => 'queries/filters', :locals => {:query => collection.query} %>
+        </div>
+      </fieldset>
+      <fieldset class="collapsible collapsed">
+        <legend onclick="toggleFieldset(this);"><%= l(:label_options) %></legend>
+        <div style="display: none;">
+          <table>
+            <tr>
+              <td><%= l(:field_column_names) %></td>
+              <td><%= render_query_columns_selection(collection.query) %></td>
+            </tr>
+          </table>
+        </div>
+      </fieldset>
+    </div>
+
+    <p class="buttons">
+      <%= link_to_function l(:button_apply), 'submit_query_form("query_form")', :class => 'icon icon-checked' %>
+      <%= link_to l(:button_clear), { :set_filter => 1 }, :class => 'icon icon-reload'  %>
+    </p>
+  </div>
+<% end %>
