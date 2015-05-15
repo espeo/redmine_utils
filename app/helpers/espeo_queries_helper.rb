@@ -23,22 +23,22 @@ module EspeoQueriesHelper
     Espeo::QueryCollection.new(query: query, paginator: paginator, entries: entries)
   end
 
-  def espeo_column_header(column, query)
-    (column.sortable && query.sortable) ? sort_header_tag(column.name.to_s, :caption => column.caption,
+  def espeo_column_header(column)
+    column.sortable ? sort_header_tag(column.name.to_s, :caption => column.caption,
                                                         :default_order => column.default_order) :
                       content_tag('th', h(column.caption))
   end
 
-  def espeo_column_content(column, entry)
-    value = column.value_object(entry)
+  def espeo_column_content(column, issue)
+    value = column.value(issue)
     if value.is_a?(Array)
-      value.collect {|v| espeo_column_value(column, entry, v)}.compact.join(', ').html_safe
+      value.collect {|v| column_value(column, issue, v)}.compact.join(', ').html_safe
     else
-      espeo_column_value(column, entry, value)
+      column_value(column, issue, value)
     end
   end
 
-  def espeo_column_value(column, entry, value)
+  def espeo_column_value(column, issue, value)
     if column.respond_to?(:column_value_helper)
       helper_method = column.column_value_helper
       return send(helper_method, value) unless helper_method.nil?
@@ -46,18 +46,18 @@ module EspeoQueriesHelper
 
     case column.name
     when :id
-      link_to value, entry
-    when :subject, :title
-      link_to value, entry
+      link_to value, issue_path(issue)
+    when :subject
+      link_to value, issue_path(issue)
     when :description
-      entry.description? ? content_tag('div', textilizable(entry, :description), :class => "wiki") : ''
+      issue.description? ? content_tag('div', textilizable(issue, :description), :class => "wiki") : ''
     when :done_ratio
       progress_bar(value, :width => '80px')
     when :relations
-      other = value.other_issue(entry)
+      other = value.other_issue(issue)
       content_tag('span',
-        (l(value.label_for(entry)) + " " + link_to_issue(other, :subject => false, :tracker => false)).html_safe,
-        :class => value.css_classes_for(entry))
+        (l(value.label_for(issue)) + " " + link_to_issue(other, :subject => false, :tracker => false)).html_safe,
+        :class => value.css_classes_for(issue))
     else
       format_object(value)
     end
