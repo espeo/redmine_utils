@@ -32,9 +32,9 @@ module EspeoQueriesHelper
   def espeo_column_content(column, issue)
     value = column.value(issue)
     if value.is_a?(Array)
-      value.collect {|v| column_value(column, issue, v)}.compact.join(', ').html_safe
+      value.collect {|v| espeo_column_value(column, issue, v)}.compact.join(', ').html_safe
     else
-      column_value(column, issue, value)
+      espeo_column_value(column, issue, value)
     end
   end
 
@@ -46,9 +46,9 @@ module EspeoQueriesHelper
 
     case column.name
     when :id
-      link_to value, issue_path(issue)
+      link_to value, issue
     when :subject
-      link_to value, issue_path(issue)
+      link_to value, issue
     when :description
       issue.description? ? content_tag('div', textilizable(issue, :description), :class => "wiki") : ''
     when :done_ratio
